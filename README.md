@@ -138,6 +138,8 @@ However, because the model used in this project is a neural network, no feature 
 
 ### Model Architecture
 
+#### Baseline Architecture
+
 The model implemented in this stage of the project is a simple feed-forward neural network designed for multiclass intrusion detection. The objective of the model is to classify each network traffic record into one of the ten categories defined by the attack category column.
 
 The architecture consists of three hidden dense layers followed by a softmax output layer. The first hidden layer contains 64 neurons with ReLU activation, the second hidden layer contains 32 neurons with ReLU activation, and the third hidden layer contains 16 neurons with ReLU activation. The output layer contains 10 neurons, one for each class, and uses the softmax activation function to generate a probability distribution across the possible traffic categories.
@@ -287,6 +289,12 @@ Overall, the paper-based DNN model provides a stronger experimental foundation t
 ### Experiment 3: Paper-Based ANN Architecture TODO
 
 ### Experiment Comparison TODO
+
+| Experiment | Architecture | Epochs | Batch Size | Test Accuracy | Test Loss | Macro F1 | Weighted F1 |
+|---|---|---:|---:|---:|---:|---:|---:|
+| Baseline | 64-32-16 | 10 | 64 | 74.20% | 0.7263 | 0.46 | 0.73 |
+| Paper-Based DNN | 100-100-100 | 100 | 100 | 74.60% | 1.1996 | 0.48 | 0.73 |
+| Paper-Based ANN | TODO | TODO | TODO | TODO | TODO | TODO | TODO |
 
 ### Hyperparameter Tuning TODO
 
