@@ -120,6 +120,10 @@ After encoding categorical variables, the numerical features were scaled using s
 
 The scaler was fitted only on the training data and then applied to the testing data. This was done to avoid data leakage and ensure that the test set remained unseen during the preprocessing learning process.
 
+#### Class Imbalance Handling
+
+Due to the strong imbalance in the `attack_cat` classes, less aggressive class weights were applied during model training. Instead of artificially oversampling or generating synthetic records, the model was trained with adjusted class weights to increase the penalty for misclassifying minority classes. This approach preserves the original dataset distribution while helping the model pay more attention to underrepresented categories such as `Analysis`, `Backdoor`, `Shellcode`, and `Worms`. Class weights approach was selected because since we are working with packet-based features, generating synthetic records could lead to unrealistic network traffic patterns that do not reflect real-world scenarios. Additionally, class weights allow the model to learn from the original data distribution while still addressing the imbalance issue.
+
 #### Multicollinearity Analysis
 
 A correlation matrix and heatmap were generated using the numerical variables in the dataset. The heatmap shows that some groups of variables present strong correlations, especially features related to packet counts, byte counts, TCP behavior, and connection counters. For example, variables such as `spkts`, `dpkts`, `sbytes`, `dbytes`, `sloss`, and `dloss` show visible correlation patterns. Similarly, some connection-based attributes such as `ct_srv_src`, `ct_dst_ltm`, `ct_src_dport_ltm`, `ct_dst_sport_ltm`, and `ct_srv_dst` also show notable relationships.
