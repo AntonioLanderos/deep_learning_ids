@@ -78,7 +78,7 @@ The following table presents the main attributes used in the dataset and their g
 
 ## Methodology
 
-## Preprocessing
+### Preprocessing
 
 The training dataset contains **82,332 records** and includes network traffic observations classified into ten categories using the `attack_cat` variable. These categories represent both normal traffic and different types of cyberattacks: `Normal`, `Generic`, `Exploits`, `Fuzzers`, `DoS`, `Reconnaissance`, `Analysis`, `Backdoor`, `Shellcode`, and `Worms`.
 
@@ -107,7 +107,7 @@ The class distribution in the training dataset shows a strong imbalance among th
 
 This imbalance is important because a model trained directly on the original distribution may favor majority classes such as `Normal`, `Generic`, and `Exploits`, while performing poorly on minority attack categories. Therefore, the class distribution was analyzed before training. Instead of artificially oversampling or generating synthetic records, less aggressive class weights were applied during model training. This approach allowed the model to assign higher importance to minority classes without modifying the original dataset or generating potentially unrealistic network traffic samples.
 
-### Encoding of Categorical Variables
+#### Encoding of Categorical Variables
 
 Since neural networks cannot directly process categorical text values, categorical variables were transformed into numerical representations. The input categorical attributes, such as `proto`, `service`, and `state`, were encoded using **One-Hot Encoding**. This technique converts each category into a separate binary column, preventing the model from assuming an artificial ordinal relationship between nominal categories.
 
@@ -115,13 +115,13 @@ The target variable `attack_cat` was encoded using **Label Encoding**, assigning
 
 The columns `id`, `label`, and `attack_cat` were removed from the input features before training. The `id` column was removed because it is only an identifier and does not provide meaningful information for classification. The `label` column was removed because it corresponds to binary classification, while this project focuses on multiclass classification. The `attack_cat` column was removed from the input features to avoid data leakage, since it is the target variable that the model is trying to predict.
 
-### Feature Scaling
+#### Feature Scaling
 
 After encoding categorical variables, the numerical features were scaled using standardization. Scaling was applied because neural networks are sensitive to the magnitude of input values, and the dataset contains features with different ranges, such as packet counts, byte counts, rates, and time-based measurements. Standardizing the features helps the model train more consistently and prevents variables with larger numerical ranges from dominating the learning process.
 
 The scaler was fitted only on the training data and then applied to the testing data. This was done to avoid data leakage and ensure that the test set remained unseen during the preprocessing learning process.
 
-### Multicollinearity Analysis
+#### Multicollinearity Analysis
 
 A correlation matrix and heatmap were generated using the numerical variables in the dataset. The heatmap shows that some groups of variables present strong correlations, especially features related to packet counts, byte counts, TCP behavior, and connection counters. For example, variables such as `spkts`, `dpkts`, `sbytes`, `dbytes`, `sloss`, and `dloss` show visible correlation patterns. Similarly, some connection-based attributes such as `ct_srv_src`, `ct_dst_ltm`, `ct_src_dport_ltm`, `ct_dst_sport_ltm`, and `ct_srv_dst` also show notable relationships.
 
@@ -133,7 +133,7 @@ However, because the model used in this project is a neural network, no feature 
   <em>Graph 2. Correlation heatmap of the numerical variables in the training dataset</em>
 </p>
 
-## Model Architecture
+### Model Architecture
 
 The model implemented in this stage of the project is a simple feed-forward neural network designed for multiclass intrusion detection. The objective of the model is to classify each network traffic record into one of the ten categories defined by the attack category column.
 
@@ -153,7 +153,31 @@ The implemented architecture is summarized as follows:
 
 The model contains a total of **15,002 trainable parameters**. This architecture was used as an initial baseline before implementing a deeper architecture based on the reference paper.
 
-## Results
+#### Paper-Based DNN Architecture
+
+After implementing the initial baseline model, a second experiment was developed using the DNN configuration described in the reference paper. This architecture was selected because the paper reports it as one of its main deep learning models for multiclass intrusion detection using the UNSW-NB15 dataset.
+
+The paper-based DNN configuration uses three hidden layers with 100 neurons, the Adam optimizer, ReLU activation in the hidden layers, Softmax activation in the output layer, 100 epochs, and a batch size of 100. Since this project performs multiclass classification using the `attack_cat` column, the output layer was configured with 10 neurons, one for each traffic category.
+
+The implemented paper-based DNN architecture is summarized as follows:
+
+| Hyperparameter           |                           Value |
+| ------------------------ | ------------------------------: |
+| Hidden Layers            |                               3 |
+| Neurons per Hidden Layer |                             100 |
+| Optimizer                |                            Adam |
+| Hidden Layer Activation  |                            ReLU |
+| Output Layer Activation  |                         Softmax |
+| Epochs                   |                             100 |
+| Batch Size               |                             100 |
+| Output Classes           |                              10 |
+| Loss Function            | Sparse Categorical Crossentropy |
+
+This model was compiled using the Adam optimizer and the `sparse_categorical_crossentropy` loss function. The target labels were kept as integer-encoded values, which is why sparse categorical crossentropy was appropriate. Accuracy was used as the main training metric, following the evaluation approach used in the reference paper.
+
+## Experiments and Results
+
+### Experiment 1: Baseline Model
 
 The model was trained for **10 epochs** using the original Kaggle training set, with a validation subset created from the training data. The original Kaggle testing set was kept separate and used only for final evaluation. Less aggressive class weights were applied during training to address the strong class imbalance without artificially modifying the dataset.
 
@@ -186,8 +210,6 @@ In addition to accuracy and loss, a classification report and confusion matrix w
   <em>Graph N. Confusion matrix for the obtained results</em>
 </p>
 
-### Training and Validation Performance
-
 The training and validation curves were analyzed to evaluate the behavior of the implemented baseline model during the learning process. The loss graph shows that the training loss decreases consistently across the 10 epochs. The validation loss also remains relatively stable and decreases overall. Since the validation loss does not increase significantly while the training loss decreases, there is no overfitting.
 
 The accuracy graph also shows stable learning behavior. Training accuracy increases from approximately 0.73 to 0.84, while validation accuracy remains close to the training curve, reaching values around 0.82–0.83. The closeness between both curves suggests that the model is not memorizing the training data excessively. Additionally, the model does not show clear signs of underfitting, since both training and validation accuracy reach acceptable values for an initial multiclass classification baseline.
@@ -206,7 +228,64 @@ The accuracy graph also shows stable learning behavior. Training accuracy increa
 
 Based on the results, the implemented model provides a functional baseline for multiclass intrusion detection. However, the performance across minority classes indicates that further experimentation is needed. Future improvements will include testing a deeper architecture inspired by the reference paper, adjusting hyperparameters, increasing the number of epochs with early stopping, and comparing different class weighting strategies.
 
-TODO: These results correspond to the initial baseline model and not yet to the final model based on the reference paper
+### Experiment 2: Paper-Based DNN Architecture
+
+A second experiment was performed using the DNN hyperparameter configuration proposed in the reference paper. Unlike the baseline model, which used a smaller architecture with 64, 32, and 16 neurons, this experiment used three hidden layers with 100 neurons each. The model was trained for 100 epochs with a batch size of 100, using the Adam optimizer, ReLU activation in the hidden layers, and Softmax activation in the output layer.
+
+<p align="center">
+  <img src="./images/paperDnnHyperparams.png" alt="dnn-hyperparameters" width="50%" />
+  <br>
+  <em>Table N. DNN hyperparameters based on the reference paper</em>
+</p>
+
+The training and validation accuracy curves show stable learning behavior across the 100 epochs. Training accuracy increased steadily and remained slightly above validation accuracy during the later epochs. Validation accuracy stayed close to the training curve. This indicates that the model was able to learn useful patterns without showing overfitting.
+
+<p align="center">
+  <img src="./images/paperDnnAccuracyCurves.png" alt="paper-dnn-accuracy-curves" width="50%" />
+  <br>
+  <em>Graph N. Training and validation accuracy curves for the paper-based DNN model</em>
+</p>
+
+The loss curves show that training loss decreased consistently throughout the 100 epochs. Validation loss decreased during the early epochs and later stabilized with small fluctuations. Toward the final epochs, training loss continued decreasing while validation loss remained slightly higher, which suggests a bit of overfitting. However, the validation loss did not increase sharply, so the model did not show an overfitting problem.
+
+<p align="center">
+  <img src="./images/paperDnnLossCurves.png" alt="paper-dnn-loss-curves" width="50%" />
+  <br>
+  <em>Graph N. Training and validation loss curves for the paper-based DNN model</em>
+</p>
+
+The final evaluation on the testing dataset produced the following results:
+
+| Metric                 |  Value |
+| ---------------------- | -----: |
+| Test Accuracy          | 74.60% |
+| Test Loss              | 1.1996 |
+| Macro Avg Precision    |   0.53 |
+| Macro Avg Recall       |   0.50 |
+| Macro Avg F1-Score     |   0.48 |
+| Weighted Avg Precision |   0.78 |
+| Weighted Avg Recall    |   0.75 |
+| Weighted Avg F1-Score  |   0.73 |
+
+The paper-based DNN model achieved a test accuracy of **74.60%**, which is slightly higher than the baseline model. Although the improvement in accuracy was small, the macro average F1-score increased to **0.48**, compared to approximately **0.46** in the baseline model. This is relevant because macro F1-score gives equal importance to all classes, including minority attack categories.
+
+The classification report shows that the model performed strongly on majority classes such as `Generic` and `Normal`, with F1-scores of **0.98** and **0.86**, respectively. It also showed good performance on `Reconnaissance`, with an F1-score of **0.77**, and improved detection of `Shellcode`, which reached an F1-score of **0.52**. However, the model still struggled with minority classes such as `Analysis` and `Backdoor`, which obtained F1-scores of **0.02** and **0.08**, respectively.
+
+The confusion matrix confirms that most `Generic` and `Normal` samples were correctly classified. However, minority classes were often confused with more represented categories such as `DoS`, `Exploits`, and `Normal`. This indicates that class imbalance remains a major challenge, even when using class weights and a larger architecture.
+
+<p align="center">
+  <img src="./images/paperDnnConfusionMatrix.png" alt="paper-dnn-confusion-matrix" width="50%" />
+  <br>
+  <em>Graph N. Confusion matrix for the paper-based DNN model</em>
+</p>
+
+Overall, the paper-based DNN model provides a stronger experimental foundation than the baseline model because it follows the hyperparameter configuration proposed in the reference paper. However, the results show that the architecture still requires further experimentation to improve the detection of minority attack categories.
+
+### Experiment 3: Paper-Based ANN Architecture TODO
+
+### Experiment Comparison TODO
+
+### Hyperparameter Tuning TODO
 
 ## Conclusion
 
