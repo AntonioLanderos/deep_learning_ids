@@ -11,8 +11,7 @@ This project focuses on the development of a deep learning model for multiclass 
 
 The original training and testing datasets provided by Kaggle were preserved to maintain a consistent evaluation process. The preprocessing stage includes removing non-relevant or leakage columns, encoding categorical features, scaling numerical values, and transforming attack categories into numerical labels. Additionally, because the dataset is highly imbalanced, less aggressive class weights were applied during training to reduce the effect of dominant classes and improve the model's ability to detect minority attack categories.
 
-TODO: Add more details about the model architecture, training process, and evaluation metrics once aligned with the paper
-The model is implemented using a [here goes the final model architecture]. Its performance is evaluated using accuracy, precision, recall, F1-score [change for paper metrics' later].
+This project first implements a baseline feed-forward neural network and then evaluates a paper-based DNN architecture using the hyperparameters proposed by Aleesa et al. The models are evaluated usingaccuracy and loss, following the reference paper, while additional metrics such as precision, recall, F1-score, and confusion matrices are included to better analyze multiclass performance under class imbalance.
 
 ## Dataset
 
