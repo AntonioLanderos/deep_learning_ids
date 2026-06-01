@@ -201,7 +201,7 @@ The final evaluation on the testing dataset produced the following results:
 | Final Validation Accuracy | 82.52% |
 | Final Validation Loss     | 0.4853 |
 
-In addition to accuracy and loss, a classification report and confusion matrix were generated to better understand the model‚Äôs behavior across classes. The weighted F1-score was approximately **0.73**, while the macro F1-score was approximately **0.46**. This confirms that the model performs well on majority classes such as `Generic` and `Normal`, but still struggles with minority classes such as `Analysis`, `Backdoor`, `Shellcode`, and `Worms`.
+In addition to accuracy and loss, a classification report and confusion matrix were generated to better understand the model's behavior across classes. The weighted F1-score was approximately **0.73**, while the macro F1-score was approximately **0.46**. This confirms that the model performs well on majority classes such as `Generic` and `Normal`, but still struggles with minority classes such as `Analysis`, `Backdoor`, `Shellcode`, and `Worms`.
 
 <p align="center">
   <img src="./images/classificationReport.png" alt="classification-report" width="30%" />
