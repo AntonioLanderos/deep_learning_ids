@@ -186,6 +186,24 @@ In addition to accuracy and loss, a classification report and confusion matrix w
   <em>Graph N. Confusion matrix for the obtained results</em>
 </p>
 
+### Training and Validation Performance
+
+The training and validation curves were analyzed to evaluate the behavior of the implemented baseline model during the learning process. The loss graph shows that the training loss decreases consistently across the 10 epochs. The validation loss also remains relatively stable and decreases overall. Since the validation loss does not increase significantly while the training loss decreases, there is no overfitting.
+
+The accuracy graph also shows stable learning behavior. Training accuracy increases from approximately 0.73 to 0.84, while validation accuracy remains close to the training curve, reaching values around 0.82–0.83. The closeness between both curves suggests that the model is not memorizing the training data excessively. Additionally, the model does not show clear signs of underfitting, since both training and validation accuracy reach acceptable values for an initial multiclass classification baseline.
+
+<p align="center">
+  <img src="./images/lossCurves.png" alt="loss-curves" width="50%" />
+  <br>
+  <em>Graph N. Training and validation loss curves</em>
+</p>
+
+<p align="center">
+  <img src="./images/accuracyCurves.png" alt="accuracy-curves" width="50%" />
+  <br>
+  <em>Graph N. Training and validation accuracy curves</em>
+</p>
+
 Based on the results, the implemented model provides a functional baseline for multiclass intrusion detection. However, the performance across minority classes indicates that further experimentation is needed. Future improvements will include testing a deeper architecture inspired by the reference paper, adjusting hyperparameters, increasing the number of epochs with early stopping, and comparing different class weighting strategies.
 
 TODO: These results correspond to the initial baseline model and not yet to the final model based on the reference paper
