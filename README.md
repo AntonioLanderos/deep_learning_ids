@@ -1,5 +1,12 @@
 # Intrusion Detection System using Deep Learning techniques
-## Abstract (TODO)
+
+## Abstract
+
+This project develops a deep learning-based Intrusion Detection System using the UNSW-NB15 dataset for multiclass attack classification. The model classifies network traffic into ten categories using the `attack_cat` variable instead of performing binary classification. The preprocessing stage included removing leakage columns, applying One-Hot Encoding to categorical features, scaling numerical values, and encoding the target labels.
+
+Several architectures were evaluated, including a baseline neural network, a paper-based DNN, and a paper-based ANN. Since the dataset is highly imbalanced, class weights were applied to improve minority-class detection without artificially modifying the original traffic data. The best-performing model was a tuned DNN with three hidden layers of 100 neurons, a learning rate of 0.0005, and capped class weights. It achieved 75.11% test accuracy, 0.49 macro F1-score, and 0.74 weighted F1-score.
+
+The results show that the model performs well on majority classes such as `Normal` and `Generic`, but still struggles with minority classes such as `Analysis`, `Backdoor`, and `Worms`. This suggests that the main limitation is the strong class imbalance in the dataset, and future work should focus on expanded or more balanced datasets.
 
 ## Introduction
 
@@ -75,6 +82,10 @@ The following table presents the main attributes used in the dataset and their g
 | `attack_cat`        | Nominal   | Traffic category or attack family. This is the target variable used for multiclass classification. |
 | `label`             | Binary    | Binary label of the traffic: `0` for normal traffic and `1` for attack traffic.                    |
 
+<p align="center">
+  <em> Table 1. Description of the dataset attributes</em>
+</p>
+
 ## Methodology
 
 ### Preprocessing
@@ -85,19 +96,19 @@ The dataset is composed of numerical, categorical, and binary variables. The num
 
 The class distribution in the training dataset shows a strong imbalance among the categories. The `Normal` class contains 37,000 records, making it the most represented class, followed by `Generic` with 18,871 records and `Exploits` with 11,132 records. In contrast, minority classes such as `Analysis`, `Backdoor`, `Shellcode`, and `Worms` contain significantly fewer records, with `Worms` having only 44 samples.
 
-| Class          | Number of Records |
-| -------------- | ----------------: |
-| Normal         |            37,000 |
-| Generic        |            18,871 |
-| Exploits       |            11,132 |
-| Fuzzers        |             6,062 |
-| DoS            |             4,089 |
-| Reconnaissance |             3,496 |
-| Analysis       |               677 |
-| Backdoor       |               583 |
-| Shellcode      |               378 |
-| Worms          |                44 |
-
+  | Class          | Number of Records |
+  | -------------- | ----------------: |
+  | Normal         |            37,000 |
+  | Generic        |            18,871 |
+  | Exploits       |            11,132 |
+  | Fuzzers        |             6,062 |
+  | DoS            |             4,089 |
+  | Reconnaissance |             3,496 |
+  | Analysis       |               677 |
+  | Backdoor       |               583 |
+  | Shellcode      |               378 |
+  | Worms          |                44 |
+  
 <p align="center">
   <img src="./images/classDistribution.png" alt="class distribution" width="30%" />
   <br>
@@ -156,6 +167,10 @@ The implemented architecture is summarized as follows:
 | Dense Layer 3 |                              16 | ReLU                | Learns a more compact representation before classification |
 | Output Layer  |                              10 | Softmax             | Produces class probabilities for multiclass classification |
 
+<p align="center">
+  <em> Table 2. Baseline model architecture</em>
+</p>
+
 The model contains a total of **15,002 trainable parameters**. This architecture was used as an initial baseline before implementing a deeper architecture based on the reference paper.
 
 #### Paper-Based DNN Architecture
@@ -177,6 +192,10 @@ The implemented paper-based DNN architecture is summarized as follows:
 | Batch Size               |                             100 |
 | Output Classes           |                              10 |
 | Loss Function            | Sparse Categorical Crossentropy |
+
+<p align="left">
+  <em> Table 3. Paper-based DNN hyperparameters</em>
+</p>
 
 This model was compiled using the Adam optimizer and the `sparse_categorical_crossentropy` loss function. The target labels were kept as integer-encoded values, which is why sparse categorical crossentropy was appropriate. Accuracy was used as the main training metric, following the evaluation approach used in the reference paper.
 
@@ -200,19 +219,22 @@ The final evaluation on the testing dataset produced the following results:
 | Final Training Loss       | 0.5332 |
 | Final Validation Accuracy | 82.52% |
 | Final Validation Loss     | 0.4853 |
+<p align="left">
+  <em> Table 4. Baseline model evaluation results</em>
+</p>
 
 In addition to accuracy and loss, a classification report and confusion matrix were generated to better understand the model's behavior across classes. The weighted F1-score was approximately **0.73**, while the macro F1-score was approximately **0.46**. This confirms that the model performs well on majority classes such as `Generic` and `Normal`, but still struggles with minority classes such as `Analysis`, `Backdoor`, `Shellcode`, and `Worms`.
 
 <p align="center">
   <img src="./images/classificationReport.png" alt="classification-report" width="30%" />
   <br>
-  <em>Table N. Classification report for the obtained results</em>
+  <em>Table 5. Classification report for the obtained results</em>
 </p>
 
 <p align="center">
   <img src="./images/confusionMatrix.png" alt="confusion-matrix" width="50%" />
   <br>
-  <em>Graph N. Confusion matrix for the obtained results</em>
+  <em>Graph 3. Confusion matrix for the obtained results</em>
 </p>
 
 The training and validation curves were analyzed to evaluate the behavior of the implemented baseline model during the learning process. The loss graph shows that the training loss decreases consistently across the 10 epochs. The validation loss also remains relatively stable and decreases overall. Since the validation loss does not increase significantly while the training loss decreases, there is no overfitting.
@@ -222,13 +244,13 @@ The accuracy graph also shows stable learning behavior. Training accuracy increa
 <p align="center">
   <img src="./images/lossCurves.png" alt="loss-curves" width="50%" />
   <br>
-  <em>Graph N. Training and validation loss curves</em>
+  <em>Graph 4. Training and validation loss curves</em>
 </p>
 
 <p align="center">
   <img src="./images/accuracyCurves.png" alt="accuracy-curves" width="50%" />
   <br>
-  <em>Graph N. Training and validation accuracy curves</em>
+  <em>Graph 5. Training and validation accuracy curves</em>
 </p>
 
 Based on the results, the implemented model provides a functional baseline for multiclass intrusion detection. However, the performance across minority classes indicates that further experimentation is needed. Future improvements will include testing a deeper architecture inspired by the reference paper, adjusting hyperparameters, increasing the number of epochs with early stopping, and comparing different class weighting strategies.
@@ -240,7 +262,7 @@ A second experiment was performed using the DNN hyperparameter configuration pro
 <p align="center">
   <img src="./images/paperDnnHyperparams.png" alt="dnn-hyperparameters" width="50%" />
   <br>
-  <em>Table N. DNN hyperparameters based on the reference paper</em>
+  <em>Table 6. DNN hyperparameters based on the reference paper</em>
 </p>
 
 The training and validation accuracy curves show stable learning behavior across the 100 epochs. Training accuracy increased steadily and remained slightly above validation accuracy during the later epochs. Validation accuracy stayed close to the training curve. This indicates that the model was able to learn useful patterns without showing overfitting.
@@ -248,7 +270,7 @@ The training and validation accuracy curves show stable learning behavior across
 <p align="center">
   <img src="./images/paperDnnAccuracyCurves.png" alt="paper-dnn-accuracy-curves" width="50%" />
   <br>
-  <em>Graph N. Training and validation accuracy curves for the paper-based DNN model</em>
+  <em>Graph 6. Training and validation accuracy curves for the paper-based DNN model</em>
 </p>
 
 The loss curves show that training loss decreased consistently throughout the 100 epochs. Validation loss decreased during the early epochs and later stabilized with small fluctuations. Toward the final epochs, training loss continued decreasing while validation loss remained slightly higher, which suggests a bit of overfitting. However, the validation loss did not increase sharply, so the model did not show an overfitting problem.
@@ -256,7 +278,7 @@ The loss curves show that training loss decreased consistently throughout the 10
 <p align="center">
   <img src="./images/paperDnnLossCurves.png" alt="paper-dnn-loss-curves" width="50%" />
   <br>
-  <em>Graph N. Training and validation loss curves for the paper-based DNN model</em>
+  <em>Graph 7. Training and validation loss curves for the paper-based DNN model</em>
 </p>
 
 The final evaluation on the testing dataset produced the following results:
@@ -271,6 +293,9 @@ The final evaluation on the testing dataset produced the following results:
 | Weighted Avg Precision |   0.78 |
 | Weighted Avg Recall    |   0.75 |
 | Weighted Avg F1-Score  |   0.73 |
+<p align="left">
+  <em> Table 7. Paper-based DNN evaluation results</em>
+</p>
 
 The paper-based DNN model achieved a test accuracy of **74.60%**, which is slightly higher than the baseline model. Although the improvement in accuracy was small, the macro average F1-score increased to **0.48**, compared to approximately **0.46** in the baseline model. This is relevant because macro F1-score gives equal importance to all classes, including minority attack categories.
 
@@ -281,7 +306,7 @@ The confusion matrix confirms that most `Generic` and `Normal` samples were corr
 <p align="center">
   <img src="./images/paperDnnConfusionMatrix.png" alt="paper-dnn-confusion-matrix" width="50%" />
   <br>
-  <em>Graph N. Confusion matrix for the paper-based DNN model</em>
+  <em>Graph 8. Confusion matrix for the paper-based DNN model</em>
 </p>
 
 Overall, the paper-based DNN model provides a stronger experimental foundation than the baseline model because it follows the hyperparameter configuration proposed in the reference paper. However, the results show that the architecture still requires further experimentation to improve the detection of minority attack categories.
@@ -293,7 +318,7 @@ A third experiment was performed using the ANN hyperparameter configuration prop
 <p align="center">
   <img src="./images/paperAnnHyperparams.png" alt="ann-hyperparameters" width="50%" />
   <br>
-  <em>Table N. ANN hyperparameters based on the reference paper</em>
+  <em>Table 8. ANN hyperparameters based on the reference paper</em>
 </p>
 
 The training and validation accuracy curves show stable learning behavior across the 100 epochs. Training accuracy increased during the first epochs and then stabilized around the mid-80% range. Validation accuracy followed a similar trend and remained close to the training curve throughout most of the training process. This indicates that the ANN model was able to learn patterns from the training data without showing a severe overfitting problem during training.
@@ -301,7 +326,7 @@ The training and validation accuracy curves show stable learning behavior across
 <p align="center">
   <img src="./images/paperAnnAccuracyCurves.png" alt="paper-ann-accuracy-curves" width="50%" />
   <br>
-  <em>Graph N. Training and validation accuracy curves for the paper-based ANN model</em>
+  <em>Graph 9. Training and validation accuracy curves for the paper-based ANN model</em>
 </p>
 
 The loss curves show that both training and validation loss decreased during the early epochs and then stabilized. The validation loss remained close to the training loss for most of the training process, although some fluctuations were observed. This suggests that the ANN model did not strongly overfit the validation set. However, despite the stable training behavior, the final test loss was higher than the one obtained by the paper-based DNN model, indicating weaker generalization on the official testing dataset.
@@ -309,7 +334,7 @@ The loss curves show that both training and validation loss decreased during the
 <p align="center">
   <img src="./images/paperAnnLossCurves.png" alt="paper-ann-loss-curves" width="50%" />
   <br>
-  <em>Graph N. Training and validation loss curves for the paper-based ANN model</em>
+  <em>Graph 10. Training and validation loss curves for the paper-based ANN model</em>
 </p>
 
 The final evaluation on the testing dataset produced the following results:
@@ -324,6 +349,9 @@ The final evaluation on the testing dataset produced the following results:
 | Weighted Avg Precision |   0.76 |
 | Weighted Avg Recall    |   0.74 |
 | Weighted Avg F1-Score  |   0.71 |
+<p align="left">
+  <em> Table 9. Paper-based ANN evaluation results</em>
+</p>
 
 The paper-based ANN model achieved a test accuracy of **73.71%**, which was lower than the paper-based DNN model. The macro average F1-score was **0.46**, similar to the initial baseline model but lower than the DNN model. This indicates that the ANN architecture did not improve the balance across classes, especially for minority attack categories.
 
@@ -334,7 +362,7 @@ The confusion matrix confirms that most `Generic` and `Normal` samples were corr
 <p align="center">
   <img src="./images/paperAnnConfusionMatrix.png" alt="paper-ann-confusion-matrix" width="50%" />
   <br>
-  <em>Graph N. Confusion matrix for the paper-based ANN model</em>
+  <em>Graph 11. Confusion matrix for the paper-based ANN model</em>
 </p>
 
 Overall, the paper-based ANN architecture did not outperform the paper-based DNN model. Although it followed the hyperparameter configuration proposed in the reference paper, the results suggest that the deeper DNN architecture was more appropriate for this dataset. For this reason, the DNN architecture was selected as the main candidate for further hyperparameter tuning.
@@ -362,13 +390,16 @@ The final tuned DNN configuration is summarized as follows:
 | Class Imbalance Strategy | Capped class weights |
 | Loss Function | Sparse Categorical Crossentropy |
 | Output Classes | 10 |
+<p align="left">
+  <em> Table 10. Final tuned DNN hyperparameters</em>
+</p>
 
 The training and validation accuracy curves show stable learning behavior across the 100 epochs. Training accuracy increased steadily and reached approximately the high-80% range, while validation accuracy remained close to the training curve but slightly lower during the final epochs. This small gap suggests mild overfitting, but the validation accuracy did not collapse, indicating that the model still maintained stable generalization during training.
 
 <p align="center">
   <img src="./images/finalDnnAccuracyCurves.png" alt="final-dnn-accuracy-curves" width="50%" />
   <br>
-  <em>Graph N. Training and validation accuracy curves for the final tuned DNN model</em>
+  <em>Graph 12. Training and validation accuracy curves for the final tuned DNN model</em>
 </p>
 
 The loss curves show that training loss decreased consistently throughout the training process. Validation loss also decreased during the early epochs and later stabilized with small fluctuations. Toward the final epochs, the training loss remained slightly lower than the validation loss, which also suggests mild overfitting. However, because the validation loss stayed relatively stable and did not increase sharply, the model did not show severe overfitting.
@@ -376,7 +407,7 @@ The loss curves show that training loss decreased consistently throughout the tr
 <p align="center">
   <img src="./images/finalDnnLossCurves.png" alt="final-dnn-loss-curves" width="50%" />
   <br>
-  <em>Graph N. Training and validation loss curves for the final tuned DNN model</em>
+  <em>Graph 13. Training and validation loss curves for the final tuned DNN model</em>
 </p>
 
 The final evaluation on the testing dataset produced the following results:
@@ -391,6 +422,9 @@ The final evaluation on the testing dataset produced the following results:
 | Weighted Avg Precision |   0.78 |
 | Weighted Avg Recall    |   0.75 |
 | Weighted Avg F1-Score  |   0.74 |
+<p align="left">
+  <em> Table 11. Final tuned DNN evaluation results</em>
+</p>
 
 The final tuned DNN model achieved the best overall performance among the evaluated configurations. Compared to the paper-based DNN model, test accuracy increased from **74.60%** to **75.11%**, macro F1-score increased from **0.48** to **0.49**, and weighted F1-score increased from **0.73** to **0.74**. Although the improvement was moderate, it was consistent across the most important evaluation metrics.
 
@@ -403,7 +437,7 @@ The confusion matrix confirms that most `Generic` and `Normal` samples were corr
 <p align="center">
   <img src="./images/finalDnnConfusionMatrix.png" alt="final-dnn-confusion-matrix" width="50%" />
   <br>
-  <em>Graph N. Confusion matrix for the final tuned DNN model</em>
+  <em>Graph 14. Confusion matrix for the final tuned DNN model</em>
 </p>
 
 Overall, this configuration was selected as the final model because it provided the best balance between test accuracy, macro F1-score, weighted F1-score, and class-level performance. The improvements were not large, but they were consistent, making the final tuned DNN model the strongest configuration tested in this project.
@@ -422,6 +456,9 @@ After hyperparameter tuning, the best-performing model was the DNN with a reduce
 | Paper-Based DNN | 100-100-100 | 100 | 100 | 74.60% | 1.1996 | 0.48 | 0.73 |
 | Paper-Based ANN | 850 | 100 | 100 | 73.71% | 1.2446 | 0.46 | 0.71 |
 | DNN + LR + Capped weights | 100-100-100 | 100 | 100 | **75.11%** | 0.9952 | **0.49** | **0.74**
+<p align="center">
+  <em> Table 12. Comparison of evaluated model configurations</em>
+</p>
 
 Based on these results, the DNN with learning rate tuning and capped class weights was selected as the best model configuration. It provided the best balance between overall accuracy and class-level performance, while still preserving the original dataset distribution.
 
@@ -440,10 +477,25 @@ MinMaxScaler was tested as an alternative to StandardScaler because the referenc
 Finally, capped class weights were tested. The previous class weighting strategy helped the model pay more attention to minority classes, but extreme weights could make the model overpredict rare categories. To reduce this effect, the class weights were capped while keeping the learning rate at 0.0005. This configuration produced the best overall result, reaching 75.11% test accuracy, 0.49 macro F1-score, and 0.74 weighted F1-score.
 
 The final selected model used the paper-based DNN architecture with three hidden layers of 100 neurons, Adam optimizer with a learning rate of 0.0005, StandardScaler preprocessing, batch size of 100, and capped class weights. This configuration was selected because it achieved the best balance across accuracy, macro F1-score, and weighted F1-score.
-
 ## Conclusion
+
+This project developed and evaluated deep learning models for multiclass intrusion detection using the UNSW-NB15 dataset. The main objective was to classify network traffic into different attack categories using the `attack_cat` variable instead of performing only binary classification between normal and attack traffic. To achieve this, the original Kaggle training and testing split was preserved, categorical features were encoded, numerical features were scaled, and the target labels were transformed into numerical classes.
+
+Several models were tested throughout the project. The first model was a simple baseline feed-forward neural network, followed by two architectures based on the reference paper: a DNN with three hidden layers of 100 neurons and an ANN with one hidden layer of 850 neurons. The paper-based DNN achieved better results than the ANN, showing that the deeper architecture was more appropriate for this multiclass classification task. After that, different hyperparameter tuning strategies were tested, including changes in batch size, layer size, learning rate, dropout, scaling method, and class weight adjustment.
+
+The best-performing configuration was the final tuned DNN model, which kept the paper-based DNN architecture but used a lower learning rate of 0.0005 and capped class weights. This model achieved the highest overall performance among the tested configurations, with a test accuracy of 75.11%, a macro F1-score of 0.49, and a weighted F1-score of 0.74. Although the improvement over the original DNN model was moderate, it was consistent across the most important evaluation metrics.
+
+However, the experiments also showed that the model reached a performance barrier. After several tuning attempts, the results remained within a similar range, especially in terms of macro F1-score. This suggests that the main limitation was not only the neural network architecture or the selected hyperparameters, but also the characteristics of the dataset itself. The strong class imbalance heavily affected the model’s ability to correctly classify minority attack categories such as `Analysis`, `Backdoor`, `Shellcode`, and `Worms`.
+
+Class weights were selected as the main imbalance-handling technique because they allowed the model to give more importance to minority classes without modifying the original dataset. This was important because the dataset is based on network traffic features, and artificially generating or duplicating records could create unrealistic traffic patterns or increase the risk of overfitting. Instead of oversampling or using synthetic data, class weights preserved the original data distribution while still helping the model pay more attention to underrepresented classes.
+
+Even with class weights, some minority classes remained difficult to classify. This indicates that the available number of samples for those categories was not sufficient for the model to learn strong and generalizable patterns. For this reason, continuing to test small hyperparameter changes was unlikely to produce significant improvements. A more effective solution would be to work with an expanded or more balanced version of the dataset, where minority classes contain more representative examples. This would give the model more information to learn the behavior of rare attack categories and could improve macro-level performance.
+
+Overall, the final tuned DNN model provided the best balance between accuracy, macro F1-score, weighted F1-score, and class-level performance among the tested configurations. The project demonstrates that deep learning can be useful for multiclass intrusion detection, especially for majority classes such as `Normal` and `Generic`. However, it also shows that class imbalance remains a major challenge in intrusion detection datasets. Future work should focus on evaluating expanded datasets, improving the representation of minority classes, and exploring more advanced imbalance-handling techniques while ensuring that generated or augmented traffic records remain realistic.
 
 ## References
 Aleesa, Ahmed & Thanoun, Mohammed & Mohammed, Ahmed & Sahar, Nan. (2021). DEEP-INTRUSION DETECTION SYSTEM WITH ENHANCED UNSW-NB15 DATASET BASED ON DEEP LEARNING TECHNIQUES. Journal of Engineering Science and Technology. 16. 711-727.
 
 "Deep learning in intrusion detection systems," IEEE Conference Publication | IEEE Xplore, Dec. 01, 2018. https://ieeexplore.ieee.org/document/8625278
+
+DataGuard Insights, “How intrusion detection systems help identify cyber threats in real-time,” DataGuard, Feb. 04, 2026. [Online]. Available: https://www.dataguard.com/blog/how-intrusion-detection-systems-help-identify-cyber-threats/
