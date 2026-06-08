@@ -286,17 +286,160 @@ The confusion matrix confirms that most `Generic` and `Normal` samples were corr
 
 Overall, the paper-based DNN model provides a stronger experimental foundation than the baseline model because it follows the hyperparameter configuration proposed in the reference paper. However, the results show that the architecture still requires further experimentation to improve the detection of minority attack categories.
 
-### Experiment 3: Paper-Based ANN Architecture TODO
+### Experiment 3: Paper-Based ANN Architecture
 
-### Experiment Comparison TODO
+A third experiment was performed using the ANN hyperparameter configuration proposed in the reference paper. Unlike the paper-based DNN model, which used three hidden layers with 100 neurons each, this experiment used a shallower architecture with a single hidden layer containing 850 neurons. The model was trained for 100 epochs with a batch size of 100, using the Adam optimizer, ReLU activation in the hidden layer, and Softmax activation in the output layer.
+
+<p align="center">
+  <img src="./images/paperAnnHyperparams.png" alt="ann-hyperparameters" width="50%" />
+  <br>
+  <em>Table N. ANN hyperparameters based on the reference paper</em>
+</p>
+
+The training and validation accuracy curves show stable learning behavior across the 100 epochs. Training accuracy increased during the first epochs and then stabilized around the mid-80% range. Validation accuracy followed a similar trend and remained close to the training curve throughout most of the training process. This indicates that the ANN model was able to learn patterns from the training data without showing a severe overfitting problem during training.
+
+<p align="center">
+  <img src="./images/paperAnnAccuracyCurves.png" alt="paper-ann-accuracy-curves" width="50%" />
+  <br>
+  <em>Graph N. Training and validation accuracy curves for the paper-based ANN model</em>
+</p>
+
+The loss curves show that both training and validation loss decreased during the early epochs and then stabilized. The validation loss remained close to the training loss for most of the training process, although some fluctuations were observed. This suggests that the ANN model did not strongly overfit the validation set. However, despite the stable training behavior, the final test loss was higher than the one obtained by the paper-based DNN model, indicating weaker generalization on the official testing dataset.
+
+<p align="center">
+  <img src="./images/paperAnnLossCurves.png" alt="paper-ann-loss-curves" width="50%" />
+  <br>
+  <em>Graph N. Training and validation loss curves for the paper-based ANN model</em>
+</p>
+
+The final evaluation on the testing dataset produced the following results:
+
+| Metric                 |  Value |
+| ---------------------- | -----: |
+| Test Accuracy          | 73.71% |
+| Test Loss              | 1.2446 |
+| Macro Avg Precision    |   0.49 |
+| Macro Avg Recall       |   0.50 |
+| Macro Avg F1-Score     |   0.46 |
+| Weighted Avg Precision |   0.76 |
+| Weighted Avg Recall    |   0.74 |
+| Weighted Avg F1-Score  |   0.71 |
+
+The paper-based ANN model achieved a test accuracy of **73.71%**, which was lower than the paper-based DNN model. The macro average F1-score was **0.46**, similar to the initial baseline model but lower than the DNN model. This indicates that the ANN architecture did not improve the balance across classes, especially for minority attack categories.
+
+The classification report shows that the model performed well on majority classes such as `Generic` and `Normal`, with F1-scores of **0.98** and **0.86**, respectively. It also achieved reasonable performance on `Reconnaissance`, with an F1-score of **0.74**, and detected `Shellcode` with an F1-score of **0.51**. However, the model struggled with minority classes such as `Analysis`, `Backdoor`, and `Worms`, which obtained F1-scores of **0.01**, **0.06**, and **0.14**, respectively.
+
+The confusion matrix confirms that most `Generic` and `Normal` samples were correctly classified. However, minority classes were frequently confused with more represented classes. For example, many `Analysis` and `Backdoor` samples were classified as `DoS` or `Normal`, while `Worms` samples were often confused with `Exploits`. This confirms that class imbalance and overlapping feature patterns remained major challenges for the ANN model.
+
+<p align="center">
+  <img src="./images/paperAnnConfusionMatrix.png" alt="paper-ann-confusion-matrix" width="50%" />
+  <br>
+  <em>Graph N. Confusion matrix for the paper-based ANN model</em>
+</p>
+
+Overall, the paper-based ANN architecture did not outperform the paper-based DNN model. Although it followed the hyperparameter configuration proposed in the reference paper, the results suggest that the deeper DNN architecture was more appropriate for this dataset. For this reason, the DNN architecture was selected as the main candidate for further hyperparameter tuning.
+
+### Experiment 4: Final Tuned DNN Model
+
+After evaluating the baseline model, the paper-based DNN architecture, and the paper-based ANN architecture, the DNN model was selected as the main candidate for hyperparameter tuning. The final selected configuration kept the paper-based DNN structure with three hidden layers of 100 neurons each, but included two important adjustments: the Adam optimizer learning rate was reduced to 0.0005, and the class weights were capped to reduce the effect of extreme weights from minority classes.
+
+The objective of this experiment was to improve the balance between overall accuracy and minority-class detection while preserving the main architecture proposed in the reference paper. The model was trained for 100 epochs with a batch size of 100, using ReLU activation in the hidden layers and Softmax activation in the output layer.
+
+The final tuned DNN configuration is summarized as follows:
+
+| Hyperparameter | Value |
+|---|---:|
+| Architecture | DNN |
+| Hidden Layers | 3 |
+| Neurons per Hidden Layer | 100 |
+| Optimizer | Adam |
+| Learning Rate | 0.0005 |
+| Hidden Layer Activation | ReLU |
+| Output Layer Activation | Softmax |
+| Epochs | 100 |
+| Batch Size | 100 |
+| Scaling Method | StandardScaler |
+| Class Imbalance Strategy | Capped class weights |
+| Loss Function | Sparse Categorical Crossentropy |
+| Output Classes | 10 |
+
+The training and validation accuracy curves show stable learning behavior across the 100 epochs. Training accuracy increased steadily and reached approximately the high-80% range, while validation accuracy remained close to the training curve but slightly lower during the final epochs. This small gap suggests mild overfitting, but the validation accuracy did not collapse, indicating that the model still maintained stable generalization during training.
+
+<p align="center">
+  <img src="./images/finalDnnAccuracyCurves.png" alt="final-dnn-accuracy-curves" width="50%" />
+  <br>
+  <em>Graph N. Training and validation accuracy curves for the final tuned DNN model</em>
+</p>
+
+The loss curves show that training loss decreased consistently throughout the training process. Validation loss also decreased during the early epochs and later stabilized with small fluctuations. Toward the final epochs, the training loss remained slightly lower than the validation loss, which also suggests mild overfitting. However, because the validation loss stayed relatively stable and did not increase sharply, the model did not show severe overfitting.
+
+<p align="center">
+  <img src="./images/finalDnnLossCurves.png" alt="final-dnn-loss-curves" width="50%" />
+  <br>
+  <em>Graph N. Training and validation loss curves for the final tuned DNN model</em>
+</p>
+
+The final evaluation on the testing dataset produced the following results:
+
+| Metric                 |  Value |
+| ---------------------- | -----: |
+| Test Accuracy          | 75.11% |
+| Test Loss              | 0.9952 |
+| Macro Avg Precision    |   0.53 |
+| Macro Avg Recall       |   0.52 |
+| Macro Avg F1-Score     |   0.49 |
+| Weighted Avg Precision |   0.78 |
+| Weighted Avg Recall    |   0.75 |
+| Weighted Avg F1-Score  |   0.74 |
+
+The final tuned DNN model achieved the best overall performance among the evaluated configurations. Compared to the paper-based DNN model, test accuracy increased from **74.60%** to **75.11%**, macro F1-score increased from **0.48** to **0.49**, and weighted F1-score increased from **0.73** to **0.74**. Although the improvement was moderate, it was consistent across the most important evaluation metrics.
+
+The classification report shows that the model maintained strong performance on majority classes such as `Generic` and `Normal`, with F1-scores of **0.99** and **0.87**, respectively. It also achieved stable results for `Reconnaissance`, with an F1-score of **0.77**, and `Shellcode`, with an F1-score of **0.55**. The `Worms` class also improved compared to some previous experiments, reaching an F1-score of **0.25**.
+
+However, minority classes such as `Analysis` and `Backdoor` remained difficult to classify, with F1-scores of **0.02** and **0.06**, respectively. This indicates that even after tuning the learning rate and adjusting class weights, the model still struggled with some highly underrepresented and overlapping attack categories.
+
+The confusion matrix confirms that most `Generic` and `Normal` samples were correctly classified. It also shows that minority classes were still frequently confused with more represented categories such as `DoS`, `Exploits`, and `Normal`. For example, `Analysis` and `Backdoor` samples were often classified as `DoS` or `Normal`, while some `Worms` samples were confused with `Exploits`. This confirms that class imbalance and similarity between attack patterns remained important limitations.
+
+<p align="center">
+  <img src="./images/finalDnnConfusionMatrix.png" alt="final-dnn-confusion-matrix" width="50%" />
+  <br>
+  <em>Graph N. Confusion matrix for the final tuned DNN model</em>
+</p>
+
+Overall, this configuration was selected as the final model because it provided the best balance between test accuracy, macro F1-score, weighted F1-score, and class-level performance. The improvements were not large, but they were consistent, making the final tuned DNN model the strongest configuration tested in this project.
+
+### Experiment Comparison
+
+The experiments show a gradual improvement from the initial baseline model to the final tuned DNN configuration. The baseline model provided a functional starting point, achieving a test accuracy of 74.20% and a macro F1-score of 0.46. The paper-based DNN architecture improved the macro F1-score to 0.48 and slightly increased the test accuracy to 74.60%, showing that the deeper architecture was better suited for the multiclass classification task than the initial baseline.
+
+The paper-based ANN architecture obtained the lowest overall performance among the main paper-based experiments, with a test accuracy of 73.71%, a test loss of 1.2446, a macro F1-score of 0.46, and a weighted F1-score of 0.71. This indicates that, for this dataset, the wider single-layer ANN was less effective than the deeper DNN model.
+
+After hyperparameter tuning, the best-performing model was the DNN with a reduced learning rate and capped class weights. This configuration achieved the highest test accuracy at 75.11%, the highest macro F1-score at 0.49, and the highest weighted F1-score at 0.74. Although the improvement was moderate, it was consistent across the most important evaluation metrics.
 
 | Experiment | Architecture | Epochs | Batch Size | Test Accuracy | Test Loss | Macro F1 | Weighted F1 |
 |---|---|---:|---:|---:|---:|---:|---:|
-| Baseline | 64-32-16 | 10 | 64 | 74.20% | 0.7263 | 0.46 | 0.73 |
+| Baseline | 64-32-16 | 10 | 64 | 74.20% | **0.7263** | 0.46 | 0.73 |
 | Paper-Based DNN | 100-100-100 | 100 | 100 | 74.60% | 1.1996 | 0.48 | 0.73 |
-| Paper-Based ANN | TODO | TODO | TODO | TODO | TODO | TODO | TODO |
+| Paper-Based ANN | 850 | 100 | 100 | 73.71% | 1.2446 | 0.46 | 0.71 |
+| DNN + LR + Capped weights | 100-100-100 | 100 | 100 | **75.11%** | 0.9952 | **0.49** | **0.74**
 
-### Hyperparameter Tuning TODO
+Based on these results, the DNN with learning rate tuning and capped class weights was selected as the best model configuration. It provided the best balance between overall accuracy and class-level performance, while still preserving the original dataset distribution.
+
+### Hyperparameter Tuning
+
+After evaluating the baseline model and the paper-based architectures, additional hyperparameter tuning was performed using the paper-based DNN as the main architecture. The objective was to improve the model without moving too far away from the configuration proposed in the reference paper.
+
+The first tuning experiment modified the batch size and layer structure. The original DNN architecture with three hidden layers of 100 neurons was changed to a decreasing structure of 128, 64, and 32 neurons, and the batch size was reduced to 32. However, this configuration produced results very similar to the original DNN baseline, suggesting that changing only the number of neurons and the batch size was not enough to significantly improve the model.
+
+The next experiment focused on the learning rate. The Adam optimizer was kept, but the learning rate was reduced from the default value of 0.001 to 0.0005. This produced a small improvement in test accuracy and a clearer improvement in test loss, indicating that a lower learning rate helped the model train more steadily.
+
+Dropout regularization was also tested with dropout rates of 0.2 and 0.1. These experiments reduced the test loss and increased recall for some minority classes, such as `Shellcode` and `Worms`. However, they also reduced test accuracy and did not improve the macro F1-score. This suggests that dropout made the model more sensitive to minority classes, but also increased false positives.
+
+MinMaxScaler was tested as an alternative to StandardScaler because the reference paper uses normalization. This experiment reduced the test loss and improved recall for some minority classes, but it did not improve the macro F1-score or weighted F1-score compared to the learning-rate-tuned model with StandardScaler. Therefore, StandardScaler was kept for the final model.
+
+Finally, capped class weights were tested. The previous class weighting strategy helped the model pay more attention to minority classes, but extreme weights could make the model overpredict rare categories. To reduce this effect, the class weights were capped while keeping the learning rate at 0.0005. This configuration produced the best overall result, reaching 75.11% test accuracy, 0.49 macro F1-score, and 0.74 weighted F1-score.
+
+The final selected model used the paper-based DNN architecture with three hidden layers of 100 neurons, Adam optimizer with a learning rate of 0.0005, StandardScaler preprocessing, batch size of 100, and capped class weights. This configuration was selected because it achieved the best balance across accuracy, macro F1-score, and weighted F1-score.
 
 ## Conclusion
 
