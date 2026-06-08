@@ -4,7 +4,7 @@
 
 This project develops a deep learning-based Intrusion Detection System using the UNSW-NB15 dataset for multiclass attack classification. The model classifies network traffic into ten categories using the `attack_cat` variable instead of performing binary classification. The preprocessing stage included removing leakage columns, applying One-Hot Encoding to categorical features, scaling numerical values, and encoding the target labels.
 
-Several architectures were evaluated, including a baseline neural network, a paper-based DNN, and a paper-based ANN. Since the dataset is highly imbalanced, class weights were applied to improve minority-class detection without artificially modifying the original traffic data. The best-performing model was a tuned DNN with three hidden layers of 100 neurons, a learning rate of 0.0005, and capped class weights. It achieved 75.11% test accuracy, 0.49 macro F1-score, and 0.74 weighted F1-score.
+Several architectures were evaluated, including a baseline neural network, a paper-based DNN, and a paper-based ANN. Since the dataset is highly imbalanced, class weights were applied to improve minority-class detection without artificially modifying the original traffic data. The best-performing model was a tuned DNN with three hidden layers of 100 neurons, a learning rate of 0.0005, and capped class weights. It achieved 75% test accuracy, 0.49 macro F1-score, and 0.74 weighted F1-score.
 
 The results show that the model performs well on majority classes such as `Normal` and `Generic`, but still struggles with minority classes such as `Analysis`, `Backdoor`, and `Worms`. This suggests that the main limitation is the strong class imbalance in the dataset, and future work should focus on expanded or more balanced datasets.
 
@@ -414,9 +414,9 @@ The final evaluation on the testing dataset produced the following results:
 
 | Metric                 |  Value |
 | ---------------------- | -----: |
-| Test Accuracy          | 75.11% |
-| Test Loss              | 0.9952 |
-| Macro Avg Precision    |   0.53 |
+| Test Accuracy          | 74.93% |
+| Test Loss              | 0.9033 |
+| Macro Avg Precision    |   0.52 |
 | Macro Avg Recall       |   0.52 |
 | Macro Avg F1-Score     |   0.49 |
 | Weighted Avg Precision |   0.78 |
@@ -448,14 +448,14 @@ The experiments show a gradual improvement from the initial baseline model to th
 
 The paper-based ANN architecture obtained the lowest overall performance among the main paper-based experiments, with a test accuracy of 73.71%, a test loss of 1.2446, a macro F1-score of 0.46, and a weighted F1-score of 0.71. This indicates that, for this dataset, the wider single-layer ANN was less effective than the deeper DNN model.
 
-After hyperparameter tuning, the best-performing model was the DNN with a reduced learning rate and capped class weights. This configuration achieved the highest test accuracy at 75.11%, the highest macro F1-score at 0.49, and the highest weighted F1-score at 0.74. Although the improvement was moderate, it was consistent across the most important evaluation metrics.
+After hyperparameter tuning, the best-performing model was the DNN with a reduced learning rate and capped class weights. This configuration achieved the highest test accuracy at 75%, the highest macro F1-score at 0.49, and the highest weighted F1-score at 0.74. Although the improvement was moderate, it was consistent across the most important evaluation metrics.
 
 | Experiment | Architecture | Epochs | Batch Size | Test Accuracy | Test Loss | Macro F1 | Weighted F1 |
 |---|---|---:|---:|---:|---:|---:|---:|
 | Baseline | 64-32-16 | 10 | 64 | 74.20% | **0.7263** | 0.46 | 0.73 |
 | Paper-Based DNN | 100-100-100 | 100 | 100 | 74.60% | 1.1996 | 0.48 | 0.73 |
 | Paper-Based ANN | 850 | 100 | 100 | 73.71% | 1.2446 | 0.46 | 0.71 |
-| DNN + LR + Capped weights | 100-100-100 | 100 | 100 | **75.11%** | 0.9952 | **0.49** | **0.74**
+| DNN + LR + Capped weights | 100-100-100 | 100 | 100 | **74.93%** | 0.9033 | **0.49** | **0.74**
 <p align="center">
   <em> Table 12. Comparison of evaluated model configurations</em>
 </p>
@@ -483,7 +483,7 @@ This project developed and evaluated deep learning models for multiclass intrusi
 
 Several models were tested throughout the project. The first model was a simple baseline feed-forward neural network, followed by two architectures based on the reference paper: a DNN with three hidden layers of 100 neurons and an ANN with one hidden layer of 850 neurons. The paper-based DNN achieved better results than the ANN, showing that the deeper architecture was more appropriate for this multiclass classification task. After that, different hyperparameter tuning strategies were tested, including changes in batch size, layer size, learning rate, dropout, scaling method, and class weight adjustment.
 
-The best-performing configuration was the final tuned DNN model, which kept the paper-based DNN architecture but used a lower learning rate of 0.0005 and capped class weights. This model achieved the highest overall performance among the tested configurations, with a test accuracy of 75.11%, a macro F1-score of 0.49, and a weighted F1-score of 0.74. Although the improvement over the original DNN model was moderate, it was consistent across the most important evaluation metrics.
+The best-performing configuration was the final tuned DNN model, which kept the paper-based DNN architecture but used a lower learning rate of 0.0005 and capped class weights. This model achieved the highest overall performance among the tested configurations, with a test accuracy of 75%, a macro F1-score of 0.49, and a weighted F1-score of 0.74. Although the improvement over the original DNN model was moderate, it was consistent across the most important evaluation metrics.
 
 However, the experiments also showed that the model reached a performance barrier. After several tuning attempts, the results remained within a similar range, especially in terms of macro F1-score. This suggests that the main limitation was not only the neural network architecture or the selected hyperparameters, but also the characteristics of the dataset itself. The strong class imbalance heavily affected the model’s ability to correctly classify minority attack categories such as `Analysis`, `Backdoor`, `Shellcode`, and `Worms`.
 
